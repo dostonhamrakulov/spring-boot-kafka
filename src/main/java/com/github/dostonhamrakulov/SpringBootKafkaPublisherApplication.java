@@ -1,4 +1,4 @@
-package Spring.Boot.and.Kafka.publisher;
+package com.github.dostonhamrakulov;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
