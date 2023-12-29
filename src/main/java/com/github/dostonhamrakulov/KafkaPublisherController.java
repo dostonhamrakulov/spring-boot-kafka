@@ -2,9 +2,9 @@ package com.github.dostonhamrakulov;
 
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,55 +13,53 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.github.dostonhamrakulov.KafkaConsumerListener.TOPIC;
+import static com.github.dostonhamrakulov.ProducerConfiguration.TOPIC;
 
+/**
+ * Rest controller to publish a message to Kafka
+ *
+ * @author Doston Hamrakulov
+ */
 @RestController
 @RequestMapping("/kafka")
+@Slf4j
 public class KafkaPublisherController {
 
+    private final KafkaTemplate<String, UserDto> kafkaTemplateSU;
+    private final KafkaTemplate<String, String> kafkaTemplateSS;
 
     @Autowired
-    KafkaTemplate<String, UserDto> kafkaTemplateSU;
-
-    @Autowired
-    KafkaTemplate<String, String> kafkaTemplateSS;
-
-    Logger logger = LoggerFactory.getLogger(KafkaPublisherController.class.getName());
-
-    /**
-     * @param userName
-     * @return
-     */
-    @GetMapping("/createUser/{userName}")
-    public String createUser(@PathVariable("userName") String userName)
-    {
-        UserDto userDto = new UserDto("sajith", "userName", "Name");
-        kafkaTemplateSS.send(TOPIC,userName);
-        logger.info("Pushing data to Kafka");
-        return userName+" Pushed to Kafka";
-
+    public KafkaPublisherController(final KafkaTemplate<String, UserDto> kafkaTemplateSU, final KafkaTemplate<String, String> kafkaTemplateSS) {
+        this.kafkaTemplateSU = kafkaTemplateSU;
+        this.kafkaTemplateSS = kafkaTemplateSS;
     }
 
     /**
-     * @param userDto
+     * Creates a user, aka - published a message with the given userName
+     * @param userName the username
+     * @return
+     */
+    @GetMapping("/createUser/{userName}")
+    public ResponseEntity<String> publishUsername(@PathVariable("userName") final String userName) {
+        kafkaTemplateSS.send(TOPIC, userName);
+        log.info("Pushed data {} to Kafka", userName);
+        return ResponseEntity.ok(userName + " Pushed to Kafka");
+    }
+
+    /**
+     * Publishes the given {@link UserDto} to the kafka
+     * @param userDto the {@link UserDto}
      * @return
      */
     @PostMapping("/createUser")
-    public String postUsertoKafka(@RequestBody UserDto userDto)
-    {
-        System.out.println("UserDto Details" + userDto.toString() );
-
-        //Types of Sends
-        //		Fire and Forget
-        kafkaTemplateSU.send(TOPIC, userDto.getName(), userDto);
-        //		Synchronous send
+    public ResponseEntity<String> publishUserDto(@RequestBody final UserDto userDto) {
         try {
             kafkaTemplateSU.send(TOPIC, userDto.getName(), userDto).get();
         } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Cannot send and get a message to kafka.", e);
+            return ResponseEntity.internalServerError().build();
         }
-        //		Asynchronous Send
-        return userDto.getName() + " Pushed to Kafka";
+
+        return ResponseEntity.ok(userDto.getName() + " Pushed to Kafka");
     }
 }

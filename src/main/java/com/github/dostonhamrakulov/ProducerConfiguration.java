@@ -32,6 +32,7 @@ public class ProducerConfiguration {
     private static final String KAFKA_HOSTNAME = "localhost:29092";
 
     private static final String GROUP_ID_CONFIG = "Consumer_Group";
+    public static final String TOPIC = "first_topic";
 
     @Bean
     public ProducerFactory<String, UserDto> producerFactory() {
