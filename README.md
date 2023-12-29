@@ -8,4 +8,4 @@ Sample Spring Boot project with Kafka to publish a message to Kafka as publisher
 * Doston Hamrakulov [@dostonhamrakulov](https://github.com/dostonhamrakulov/)
 
 # License
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/dostonhamrakulov/spring-boot-kafka/blob/main/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/dostonhamrakulov/spring-boot-kafka?tab=MIT-1-ov-file) file for details

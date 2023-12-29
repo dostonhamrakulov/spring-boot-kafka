@@ -24,7 +24,6 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
  *
  * @author Doston Hamrakulov
  */
-
 @EnableKafka
 @Configuration
 public class ProducerConfiguration {
