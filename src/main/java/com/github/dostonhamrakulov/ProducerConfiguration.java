@@ -7,7 +7,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -30,17 +29,15 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 @Configuration
 public class ProducerConfiguration {
 
-    @Value("kafka.config.hostname")
-    private String hostname;
+    private static final String KAFKA_HOSTNAME = "localhost:29092";
 
-    @Value("kafka.config.groupIdConfig")
-    private String groupIdConfig;
+    private static final String GROUP_ID_CONFIG = "Consumer_Group";
 
     @Bean
     public ProducerFactory<String, UserDto> producerFactory() {
         Map<String, Object> userConfig = new HashMap<>();
 
-        userConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hostname);
+        userConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_HOSTNAME);
         userConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         userConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
@@ -51,7 +48,7 @@ public class ProducerConfiguration {
     public ProducerFactory<String, String> producerFactorySS() {
         Map<String, Object> userConfig = new HashMap<>();
 
-        userConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hostname);
+        userConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_HOSTNAME);
         userConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         userConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
@@ -61,8 +58,8 @@ public class ProducerConfiguration {
     @Bean
     public ConsumerFactory<String, String> consumerFactorySS() {
         Map<String, Object> userConfig = new HashMap<>();
-        userConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hostname);
-        userConfig.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
+        userConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_HOSTNAME);
+        userConfig.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID_CONFIG);
         userConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         userConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(userConfig);
@@ -71,8 +68,8 @@ public class ProducerConfiguration {
     @Bean
     public ConsumerFactory<String, UserDto> consumerFactory() {
         Map<String, Object> userConfig = new HashMap<>();
-        userConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hostname);
-        userConfig.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
+        userConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_HOSTNAME);
+        userConfig.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID_CONFIG);
         userConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         userConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(userConfig);
