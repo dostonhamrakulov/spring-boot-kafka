@@ -17,19 +17,19 @@ public class KafkaConsumerListener {
 
     /**
      * Consumes an update from Kafka
-     * @param username the username
+     * @param object the message
      */
-    @KafkaListener(topics = TOPIC, groupId = "Consumer_Group")
-    public void consume(final String username) {
-        log.info("Picked message from kafka ::"+username);
-    }
+    @KafkaListener(topics = TOPIC, groupId = "Consumer_Group-1")
+    public void consume(final Object object) {
 
-    /**
-     * Consumes {@link UserDto} as JSON
-     * @param userDto the {@link UserDto}
-     */
-    @KafkaListener(topics = TOPIC, groupId = "Consumer_Group")
-    public void consumeJson(UserDto userDto) {
-        log.info("Picked message from kafka ::"+ userDto.toString());
+        if (object instanceof String) {
+            log.info("Picked message from kafka :: " + (String) object);
+        }
+
+        if (object instanceof UserDto) {
+            log.info("Picked message from kafka ::"+ ((UserDto) object).toString());
+        }
+
+        log.info("Picked message from kafka ::" + object.toString());
     }
 }

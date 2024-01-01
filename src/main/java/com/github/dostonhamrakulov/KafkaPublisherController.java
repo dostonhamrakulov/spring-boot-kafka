@@ -1,5 +1,6 @@
 package com.github.dostonhamrakulov;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class KafkaPublisherController {
      */
     @GetMapping("/createUser/{userName}")
     public ResponseEntity<String> publishUsername(@PathVariable("userName") final String userName) {
-        kafkaTemplateSS.send(TOPIC, userName);
+        kafkaTemplateSS.send(TOPIC, UUID.randomUUID().toString(), userName + " value");
         log.info("Pushed data {} to Kafka", userName);
         return ResponseEntity.ok(userName + " Pushed to Kafka");
     }
@@ -54,7 +55,7 @@ public class KafkaPublisherController {
     @PostMapping("/createUser")
     public ResponseEntity<String> publishUserDto(@RequestBody final UserDto userDto) {
         try {
-            kafkaTemplateSU.send(TOPIC, userDto.getName(), userDto).get();
+            kafkaTemplateSU.send(TOPIC, UUID.randomUUID().toString(), userDto).get();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Cannot send and get a message to kafka.", e);
             return ResponseEntity.internalServerError().build();
